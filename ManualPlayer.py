@@ -1,7 +1,7 @@
 from Scoresheet import row_names
 
 class player:
-    def choose_keep(self, values, scores):
+    def choose_keep(self, values, scores, rerolls):
         keep=None
         while (keep == None):
             try:
