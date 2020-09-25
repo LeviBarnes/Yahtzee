@@ -1,43 +1,24 @@
 import Dice
 import Scoresheet
+from ManualPlayer import player
 
-def one_turn(sheet):
+def one_turn(sheet, decider):
     values = [0] * 5
     keep = [False] * 5
     Dice.roll_dice(values,keep)
     print("Your scoresheet:")
     for q in range(13):
-        print(sheet.row_names[q] + "  " + str(sheet.scores[q]))
+        print(Scoresheet.row_names[q] + "  " + str(sheet.scores[q]))
     for q in range(2):
-        keep=None
-        while (keep == None):
-            try:
-                print('Your dice: ' + ' '.join([str(q) for q in values]))
-                keep_str = input("Keep which dice?  ")
-                keep_list = [int(q) for q in keep_str.split(',')]
-                keep = [q in keep_list for q in range(5)]
-            except:
-                keep = None
-                print('Please enter a comma-separated list of integers (e.g. 2,4,5)')
+        keep=decider.choose_keep(values.copy(), sheet.scores)
         Dice.roll_dice(values,keep)
-    print('Your dice: ' + ' '.join([str(q) for q in values]))
-    print("Your scoresheet:")
-    for q in range(13):
-        print(str(q) + "  " + sheet.row_names[q] + "  " + str(sheet.scores[q]))
-    row = None
-    while(type(row) != int):
-        try:
-            row = int(input("Apply to which row?  "))
-            if (row <  0 or row > 12):
-                raise()
-        except:
-            print("Please enter an integer between 1 and 13.")
-            row = None
+    row = decider.choose_row(values.copy(), sheet.scores)
     sheet.score(values,row)
 
 A = Scoresheet.scoreSheet()
-one_turn(A)
-one_turn(A)
+B = player()
+one_turn(A, B)
+one_turn(A, B)
 n_players = 0
 while(n_players == 0):
     try:
@@ -47,6 +28,7 @@ while(n_players == 0):
         n_players = 0
 
 sheets = [Scoresheet.scoreSheet() for i in range(n_players)]
+players = [player() for i in range(n_players)]
 
     
     
@@ -57,7 +39,7 @@ while( not done):
     for q in range(n_players):
         if not sheets[q].full():
             print("Player " + str(q) + ", take your turn.")
-            one_turn(sheets[q])
+            one_turn(sheets[q], players[q])
             done = False
 
 print("Player    Score")

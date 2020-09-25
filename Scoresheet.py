@@ -1,6 +1,9 @@
 from enum import Enum
 from functools import reduce
 
+row_names=["ones", "twos", "threes", "fours", "fives", "sixes",
+           "threekind", "fourkind", "fullhouse", "smstr",
+           "lgstr", "chance", "yahtzee"]
 class YahtzeeRow(Enum):
     ones = 0
     twos = 1
