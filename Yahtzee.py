@@ -10,9 +10,8 @@ def one_turn(sheet, decider):
     for q in range(13):
         print(Scoresheet.row_names[q] + "  " + str(sheet.scores[q]))
     for q in range(2):
-        keep=decider.choose_keep(values.copy(), sheet.scores, q)
-        Dice.roll_dice(values,keep)
-    row = decider.choose_row(values.copy(), sheet.scores)
+        keep=decider.choose_keep(values.copy(), sheet.scores.copy(), q)
+    row = decider.choose_row(values.copy(), sheet.scores.copy()
     sheet.score(values,row)
 
 n_players = 0
