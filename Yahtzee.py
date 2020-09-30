@@ -15,10 +15,6 @@ def one_turn(sheet, decider):
     row = decider.choose_row(values.copy(), sheet.scores)
     sheet.score(values,row)
 
-A = Scoresheet.scoreSheet()
-B = player()
-one_turn(A, B)
-one_turn(A, B)
 n_players = 0
 while(n_players == 0):
     try:
@@ -30,9 +26,6 @@ while(n_players == 0):
 sheets = [Scoresheet.scoreSheet() for i in range(n_players)]
 players = [player() for i in range(n_players)]
 
-    
-    
-        
 done = False
 while( not done):
     done = True
