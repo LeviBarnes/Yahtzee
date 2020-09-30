@@ -19,15 +19,15 @@ except ImportError:
     import tkinter.ttk as ttk
     py3 = True
 
-import Yahtzee_support
+import YahtzeeGUI_support as support
 
 def vp_start_gui():
     '''Starting point when module is the main routine.'''
     global val, w, root
     root = tk.Tk()
-    Yahtzee_support.set_Tk_var()
+    support.set_Tk_var()
     top = Toplevel1 (root)
-    Yahtzee_support.init(root, top)
+    support.init(root, top)
     root.mainloop()
 
 w = None
@@ -38,9 +38,9 @@ def create_Toplevel1(rt, *args, **kwargs):
     #rt = root
     root = rt
     w = tk.Toplevel (root)
-    Yahtzee_support.set_Tk_var()
+    support.set_Tk_var()
     top = Toplevel1 (w)
-    Yahtzee_support.init(w, top, *args, **kwargs)
+    support.init(w, top, *args, **kwargs)
     return (w, top)
 
 def destroy_Toplevel1():
@@ -64,116 +64,88 @@ class Toplevel1:
         top.resizable(1, 1)
         top.title("New Toplevel")
 
-        self.Frame1 = tk.Frame(top)
-        self.Frame1.place(relx=0.833, rely=0.792, relheight=0.167
-                , relwidth=0.119)
-        self.Frame1.configure(relief='groove')
-        self.Frame1.configure(borderwidth="2")
-        self.Frame1.configure(relief="groove")
+        self.KeepButtons = []
+        self.Dice = []
+        ypos_button = 0.07
+        ypos_die = 0.018
+        for q in range(5):
+            this_button = tk.Checkbutton(top)
+            this_button.place(relx=0.714, rely=ypos_button, relheight=0.039
+                        , relwidth=0.08)
+            this_button.configure(justify='left')
+            this_button.configure(text='''Keep''')
+            this_button.configure(variable=support.keep_buttons[q])
+            self.KeepButtons.append(this_button)
 
-        self.Frame1_1 = tk.Frame(top)
-        self.Frame1_1.place(relx=0.833, rely=0.599, relheight=0.167
-                , relwidth=0.118)
-        self.Frame1_1.configure(relief='groove')
-        self.Frame1_1.configure(borderwidth="2")
-        self.Frame1_1.configure(relief="groove")
+            this_die = tk.Frame(top)
+            this_die.place(relx=0.833, rely=ypos_die, relheight=0.167
+                    , relwidth=0.119)
+            this_die.configure(relief='groove')
+            this_die.configure(borderwidth="2")
+            this_die.configure(relief="groove")
+            self.Dice.append(this_die)
+            ypos_button = ypos_button + 0.20
+            ypos_die = ypos_die + 0.20
 
-        self.Frame1_2 = tk.Frame(top)
-        self.Frame1_2.place(relx=0.833, rely=0.405, relheight=0.167
-                , relwidth=0.118)
-        self.Frame1_2.configure(relief='groove')
-        self.Frame1_2.configure(borderwidth="2")
-        self.Frame1_2.configure(relief="groove")
+        self.Roll = tk.Button(top)
+        self.Roll.place(relx=0.548, rely=0.44, height=51, width=111)
+        self.Roll.configure(text='''Roll!''')
 
-        self.Frame1_3 = tk.Frame(top)
-        self.Frame1_3.place(relx=0.833, rely=0.211, relheight=0.167
-                , relwidth=0.118)
-        self.Frame1_3.configure(relief='groove')
-        self.Frame1_3.configure(borderwidth="2")
-        self.Frame1_3.configure(relief="groove")
+        self.ScoreSheetLabel = tk.Label(top)
+        self.ScoreSheetLabel.place(relx=0.05, rely=0.08, height=21, width=200)
+        self.ScoreSheetLabel.configure(text="Scoresheet")
 
-        self.Frame1_4 = tk.Frame(top)
-        self.Frame1_4.place(relx=0.833, rely=0.018, relheight=0.167
-                , relwidth=0.113)
-        self.Frame1_4.configure(relief='groove')
-        self.Frame1_4.configure(borderwidth="2")
-        self.Frame1_4.configure(relief="groove")
+        ypos = 0.125
+        self.Names = []
+        self.Scores = []
+        self.ScoreButt = []
+        for name in ['Ones', 'Twos', 'Threes', 'Fours', 'Fives', 'Sixes',
+                'Three of a Kind', 'Four of a Kind', 'Full House',
+                'Small Straight', 'Large Straight', 'Chance', 'Yahtzee']:
+            this_name = tk.Label(top)
+            this_name.place(relx=0.036, rely=ypos, height=21, width=100)
+            this_name.configure(activebackground="#ffffff")
+            this_name.configure(background="#ffffff")
+            this_name.configure(text=name)
+            self.Names.append(this_name)
 
-        self.Frame1_5 = tk.Frame(top)
-        self.Frame1_5.place(relx=0.929, rely=-0.511, relheight=0.167
-                , relwidth=0.113)
-        self.Frame1_5.configure(relief='groove')
-        self.Frame1_5.configure(borderwidth="2")
-        self.Frame1_5.configure(relief="groove")
+            this_score = tk.Label(top)
+            this_score.place(relx=0.175, rely=ypos, height=21, width=28)
+            this_score.configure(background="#ffffff")
+            this_score.configure(text='''''')
+            self.Scores.append(this_score)
 
-        self.Checkbutton1 = tk.Checkbutton(top)
-        self.Checkbutton1.place(relx=0.714, rely=0.07, relheight=0.039
-                , relwidth=0.08)
-        self.Checkbutton1.configure(justify='left')
-        self.Checkbutton1.configure(text='''Keep''')
-        self.Checkbutton1.configure(variable=Yahtzee_support.che51)
+            this_butt = tk.Button(top)
+            this_butt.place(relx=0.222, rely=ypos, height=21, width=181)
+            this_butt.configure(text="Score as " + name)
+            self.ScoreButt.append(this_button)
+            ypos = ypos + 0.05
 
-        self.Checkbutton2 = tk.Checkbutton(top)
-        self.Checkbutton2.place(relx=0.714, rely=0.264, relheight=0.04
-                , relwidth=0.081)
-        self.Checkbutton2.configure(justify='left')
-        self.Checkbutton2.configure(text='''Keep''')
-        self.Checkbutton2.configure(variable=Yahtzee_support.che53)
+            if name == "Sixes":
+                self.UpperScoreLab = tk.Label(top)
+                self.UpperScoreLab.place(relx=0.016, rely=ypos, height=21, width=120)
+                self.UpperScoreLab.configure(activebackground="#ffffff")
+                self.UpperScoreLab.configure(background="#ffffff")
+                self.UpperScoreLab.configure(text="Upper Level Tot")
+                self.UpperScore = tk.Label(top)
+                self.UpperScore.place(relx=0.175, rely=ypos, height=21, width=28)
+                self.UpperScore.configure(background="#ffffff")
+                self.UpperScore.configure(text='''''')
+                ypos = ypos + 0.05
 
-        self.Checkbutton3 = tk.Checkbutton(top)
-        self.Checkbutton3.place(relx=0.714, rely=0.458, relheight=0.04
-                , relwidth=0.081)
-        self.Checkbutton3.configure(justify='left')
-        self.Checkbutton3.configure(text='''Keep''')
-        self.Checkbutton3.configure(variable=Yahtzee_support.che54)
-
-        self.Checkbutton4 = tk.Checkbutton(top)
-        self.Checkbutton4.place(relx=0.714, rely=0.669, relheight=0.04
-                , relwidth=0.08)
-        self.Checkbutton4.configure(justify='left')
-        self.Checkbutton4.configure(text='''Keep''')
-        self.Checkbutton4.configure(variable=Yahtzee_support.che55)
-
-        self.Checkbutton5 = tk.Checkbutton(top)
-        self.Checkbutton5.place(relx=0.726, rely=0.863, relheight=0.04
-                , relwidth=0.08)
-        self.Checkbutton5.configure(justify='left')
-        self.Checkbutton5.configure(text='''Keep''')
-        self.Checkbutton5.configure(variable=Yahtzee_support.che56)
-
-        self.Button1 = tk.Button(top)
-        self.Button1.place(relx=0.548, rely=0.44, height=51, width=111)
-        self.Button1.configure(text='''Roll!''')
-
-        self.Label1 = tk.Label(top)
-        self.Label1.place(relx=0.036, rely=0.123, height=21, width=84)
-        self.Label1.configure(activebackground="#ffffff")
-        self.Label1.configure(background="#ffffff")
-        self.Label1.configure(text='''Ones''')
-
-        self.Label2 = tk.Label(top)
-        self.Label2.place(relx=0.155, rely=0.123, height=21, width=28)
-        self.Label2.configure(background="#ffffff")
-
-        self.Label1_9 = tk.Label(top)
-        self.Label1_9.place(relx=0.036, rely=0.176, height=21, width=84)
-        self.Label1_9.configure(activebackground="#ffffff")
-        self.Label1_9.configure(background="#ffffff")
-        self.Label1_9.configure(text='''Twos''')
-
-        self.Label2_10 = tk.Label(top)
-        self.Label2_10.place(relx=0.155, rely=0.176, height=21, width=28)
-        self.Label2_10.configure(activebackground="#f9f9f9")
-        self.Label2_10.configure(background="#ffffff")
-
-        self.Button2 = tk.Button(top)
-        self.Button2.place(relx=0.202, rely=0.123, height=21, width=141)
-        self.Button2.configure(text='''Score as Ones''')
-
-        self.Button2_11 = tk.Button(top)
-        self.Button2_11.place(relx=0.202, rely=0.176, height=21, width=141)
-        self.Button2_11.configure(activebackground="#f9f9f9")
-        self.Button2_11.configure(text='''Score as Twos''')
+                self.BonusLab = tk.Label(top)
+                self.BonusLab.place(relx=0.036, rely=ypos, height=21, width=100)
+                self.BonusLab.configure(activebackground="#ffffff")
+                self.BonusLab.configure(background="#ffffff")
+                self.BonusLab.configure(text="Bonus")
+                self.Bonus = tk.Label(top)
+                self.Bonus.place(relx=0.175, rely=ypos, height=21, width=28)
+                self.Bonus.configure(background="#ffffff")
+                self.Bonus.configure(text='''''')
+                self.BonusNote= tk.Label(top)
+                self.BonusNote.place(relx=0.222, rely=ypos, height=21, width=261)
+                self.BonusNote.configure(text="35 point bonus if Upper Level > 63")
+                ypos = ypos + 0.05
 
 if __name__ == '__main__':
     vp_start_gui()
