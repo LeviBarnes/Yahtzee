@@ -11,9 +11,7 @@ def one_turn(sheet, decider):
         print(Scoresheet.row_names[q] + "  " + str(sheet.scores[q]))
     for q in range(2):
         keep=decider.choose_keep(values.copy(), sheet.scores.copy(), q)
-        print (keep)
         Dice.roll_dice(values,keep)
-        print(values)
     row = decider.choose_row(values.copy(), sheet.scores.copy())
     # If the decider chooses a row that's full, start from the bottom, find
     # an unfilled row and apply there. Otherwise deciders could cheat by

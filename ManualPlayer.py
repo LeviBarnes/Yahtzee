@@ -24,6 +24,9 @@ class player:
                 row = int(input("Apply to which row?  "))
                 if (row <  0 or row > 12):
                     raise()
+                if (scores[row] != -1):
+                    print("Row " + str(row) + " is already full.")
+                    row = None
             except:
                 print("Please enter an integer between 1 and 13.")
                 row = None
