@@ -105,9 +105,10 @@ class scoreSheet:
         return 0
     def __init__(self):
         self.scores = [-1] * len(self.row_names)
-        self.row_funcs = [self.ones, self.twos, self.threes, self.fours, self.fives, self.sixes,
-                     self.threekind, self.fourkind, self.fullhouse, self.smstr,
-                     self.lgstr, self.chance, self.yahtzee]
+        self.row_funcs = [self.ones, self.twos, self.threes, self.fours,
+                          self.fives, self.sixes,self.threekind, self.fourkind,
+                          self.fullhouse, self.smstr, self.lgstr, self.chance,
+                          self.yahtzee]
         self.extra_yahtzee = 0
     def compute_score(self):
         sm=0
