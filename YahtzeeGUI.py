@@ -61,14 +61,19 @@ class Toplevel1:
             self.Dice[q].configure(image=self.imgs[self.values[q]-1])
             self.Dice[q].pack()
     def rollCB(self):
-        print("rollCB called")
         keep = [q == 1 for q in support.get_keepvals()]
-        print("keep = " + str(keep))
         Dice.roll_dice(self.values,keep)
-        print("values = " + str(self.values))
         self.updateDice()
+        self.roll_cnt = self.roll_cnt + 1
+        if self.roll_cnt >= 2:
+            self.Roll["state"] = "disabled"
     def scoreCB(self, row):
-        print("Scoring for " + self.name_list[row])
+        self.scoreSheet.score(self.values,row)
+        self.ScoreVars[row].set(str(self.scoreSheet.scores[row]))
+        self.roll_cnt = 0
+        self.Roll["state"] = "normal"
+        Dice.roll_dice(self.values,[False]*5)
+        self.updateDice()
         return False
     def __init__(self, top=None):
         '''This class configures and populates the toplevel window.
@@ -76,8 +81,9 @@ class Toplevel1:
         img_list =["img/one.png", "img/two.png", "img/three.png", 
                         "img/four.png", "img/five.png", "img/six.png"]
         self.imgs = []
+        self.scoreSheet = Scoresheet.scoreSheet()
         for i in img_list:
-            img = Image.open(i).resize((120,120),Image.ANTIALIAS)
+            img = Image.open(i).resize((110,110),Image.ANTIALIAS)
             self.imgs.append(ImageTk.PhotoImage(img))
         _bgcolor = '#d9d9d9'  # X11 color: 'gray85'
         _fgcolor = '#000000'  # X11 color: 'black'
@@ -98,18 +104,19 @@ class Toplevel1:
         ypos_die = 0.018
         for q in range(5):
             this_button = tk.Checkbutton(top)
-            this_button.place(relx=0.714, rely=ypos_button, relheight=0.039
-                        , relwidth=0.08)
+            this_button.place(relx=0.714, rely=ypos_button, relheight=0.12
+                        , relwidth=0.12)
             this_button.configure(justify='left')
             this_button.configure(text='''Keep''')
             this_button.configure(variable=support.keep_buttons[q])
             self.KeepButtons.append(this_button)
 
             this_frame = tk.Frame(top)
-            this_frame.place(relx=1.933, rely=ypos_die, relheight=0.125
-                    , relwidth=0.125)
-            this_die = tk.Label(this_frame, image = self.imgs[5], bg='green')
-            self.DiceFrames.append(this_frame)
+            this_frame.place(relx=0.933, rely=ypos_die, relheight=0.115
+                    , relwidth=0.115)
+            this_die = tk.Label(top, image = self.imgs[5], bg='white')
+            this_die.place(x=0.933, rely=ypos_die, relheight=0.115
+                    , relwidth=0.115)
             self.Dice.append(this_die)
             ypos_button = ypos_button + 0.20
             ypos_die = ypos_die + 0.20
@@ -127,6 +134,7 @@ class Toplevel1:
         self.Names = []
         self.Scores = []
         self.ScoreButt = []
+        self.ScoreVars = []
         row_num = 0
         for name in self.name_list:
             this_name = tk.Label(top)
@@ -136,10 +144,13 @@ class Toplevel1:
             this_name.configure(text=name)
             self.Names.append(this_name)
 
+            this_var = tk.StringVar()
+            this_var.set("")
             this_score = tk.Label(top)
             this_score.place(relx=0.175, rely=ypos, height=21, width=28)
             this_score.configure(background="#ffffff")
-            this_score.configure(text='''''')
+            this_score.configure(textvariable=this_var)
+            self.ScoreVars.append(this_var)
             self.Scores.append(this_score)
 
             this_butt = tk.Button(top)
@@ -177,6 +188,8 @@ class Toplevel1:
                 self.BonusNote.place(relx=0.222, rely=ypos, height=21, width=261)
                 self.BonusNote.configure(text="35 point bonus if Upper Level > 63")
                 ypos = ypos + 0.05
+        self.roll_cnt = -1
+        self.rollCB()
         self.updateDice()
 
 if __name__ == '__main__':
