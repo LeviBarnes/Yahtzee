@@ -25,6 +25,12 @@ def set_Tk_var():
     for q in range(5):
         keep_buttons.append(tk.IntVar())
 
+def get_keepvals():
+    keep = []
+    for q in keep_buttons:
+        keep.append(q.get()) 
+    return keep
+
 def init(top, gui, *args, **kwargs):
     global w, top_level, root
     w = gui

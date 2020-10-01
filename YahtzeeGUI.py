@@ -6,6 +6,9 @@
 #    Sep 30, 2020 10:02:50 AM PDT  platform: Linux
 
 import sys
+from PIL import Image, ImageTk
+import Dice
+import Scoresheet
 
 try:
     import Tkinter as tk
@@ -49,9 +52,33 @@ def destroy_Toplevel1():
     w = None
 
 class Toplevel1:
+    values = [6] * 5
+    name_list = ['Ones', 'Twos', 'Threes', 'Fours', 'Fives', 'Sixes',
+                'Three of a Kind', 'Four of a Kind', 'Full House',
+                'Small Straight', 'Large Straight', 'Chance', 'Yahtzee']
+    def updateDice(self):
+        for q in range(5):
+            self.Dice[q].configure(image=self.imgs[self.values[q]-1])
+            self.Dice[q].pack()
+    def rollCB(self):
+        print("rollCB called")
+        keep = [q == 1 for q in support.get_keepvals()]
+        print("keep = " + str(keep))
+        Dice.roll_dice(self.values,keep)
+        print("values = " + str(self.values))
+        self.updateDice()
+    def scoreCB(self, row):
+        print("Scoring for " + self.name_list[row])
+        return False
     def __init__(self, top=None):
         '''This class configures and populates the toplevel window.
            top is the toplevel containing window.'''
+        img_list =["img/one.png", "img/two.png", "img/three.png", 
+                        "img/four.png", "img/five.png", "img/six.png"]
+        self.imgs = []
+        for i in img_list:
+            img = Image.open(i).resize((120,120),Image.ANTIALIAS)
+            self.imgs.append(ImageTk.PhotoImage(img))
         _bgcolor = '#d9d9d9'  # X11 color: 'gray85'
         _fgcolor = '#000000'  # X11 color: 'black'
         _compcolor = '#d9d9d9' # X11 color: 'gray85'
@@ -66,6 +93,7 @@ class Toplevel1:
 
         self.KeepButtons = []
         self.Dice = []
+        self.DiceFrames = []
         ypos_button = 0.07
         ypos_die = 0.018
         for q in range(5):
@@ -77,12 +105,11 @@ class Toplevel1:
             this_button.configure(variable=support.keep_buttons[q])
             self.KeepButtons.append(this_button)
 
-            this_die = tk.Frame(top)
-            this_die.place(relx=0.833, rely=ypos_die, relheight=0.167
-                    , relwidth=0.119)
-            this_die.configure(relief='groove')
-            this_die.configure(borderwidth="2")
-            this_die.configure(relief="groove")
+            this_frame = tk.Frame(top)
+            this_frame.place(relx=1.933, rely=ypos_die, relheight=0.125
+                    , relwidth=0.125)
+            this_die = tk.Label(this_frame, image = self.imgs[5], bg='green')
+            self.DiceFrames.append(this_frame)
             self.Dice.append(this_die)
             ypos_button = ypos_button + 0.20
             ypos_die = ypos_die + 0.20
@@ -90,6 +117,7 @@ class Toplevel1:
         self.Roll = tk.Button(top)
         self.Roll.place(relx=0.548, rely=0.44, height=51, width=111)
         self.Roll.configure(text='''Roll!''')
+        self.Roll.configure(command=self.rollCB)
 
         self.ScoreSheetLabel = tk.Label(top)
         self.ScoreSheetLabel.place(relx=0.05, rely=0.08, height=21, width=200)
@@ -99,9 +127,8 @@ class Toplevel1:
         self.Names = []
         self.Scores = []
         self.ScoreButt = []
-        for name in ['Ones', 'Twos', 'Threes', 'Fours', 'Fives', 'Sixes',
-                'Three of a Kind', 'Four of a Kind', 'Full House',
-                'Small Straight', 'Large Straight', 'Chance', 'Yahtzee']:
+        row_num = 0
+        for name in self.name_list:
             this_name = tk.Label(top)
             this_name.place(relx=0.036, rely=ypos, height=21, width=100)
             this_name.configure(activebackground="#ffffff")
@@ -117,8 +144,12 @@ class Toplevel1:
 
             this_butt = tk.Button(top)
             this_butt.place(relx=0.222, rely=ypos, height=21, width=181)
+            this_cb = lambda row_num=row_num: self.scoreCB(row_num)
+
             this_butt.configure(text="Score as " + name)
+            this_butt.configure(command=lambda row_num=row_num: self.scoreCB(row_num))
             self.ScoreButt.append(this_button)
+            row_num = row_num + 1
             ypos = ypos + 0.05
 
             if name == "Sixes":
@@ -146,6 +177,7 @@ class Toplevel1:
                 self.BonusNote.place(relx=0.222, rely=ypos, height=21, width=261)
                 self.BonusNote.configure(text="35 point bonus if Upper Level > 63")
                 ypos = ypos + 0.05
+        self.updateDice()
 
 if __name__ == '__main__':
     vp_start_gui()
